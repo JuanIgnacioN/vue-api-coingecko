@@ -2,9 +2,16 @@
 
 <div class="container">
   <div class="row">
-    <h1>Capitalización del mercado de criptomonedas</h1>
+    <h1 class="display-3 text-center">Coint Market</h1>
 
-    <table class="table table-dark">
+    <input type="text"
+      class="form-control bg-dark text-light rounded-0 border-0 my-4"
+      placeholder="Search coin"
+      @keyup="searchCoin()"
+      v-model="textSearch"
+    >
+
+    <table class="table table-striped table-dark">
       <thead>
         <tr>
           <th v-for="title in titles" :key="title">
@@ -13,7 +20,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(coin, index) in coins" :key="coin.id">
+        <tr v-for="(coin, index) in filteredCoin" :key="coin.id">
           <td class="text-muted">
             {{index + 1}}
           </td>
@@ -40,6 +47,9 @@
           <td>
             $ {{coin.total_volume.toLocaleString()}}
           </td>
+          <td>
+              {{coin.last_updated.slice(0, 10)}}
+          </td>
         </tr>
       </tbody>
     </table>
@@ -55,13 +65,16 @@ export default {
   data(){
     return{
       coins: [],
+      filteredCoin: [],
       titles: [
         '#',
         'Coin',
         'Price',
         'Price Change',
         '24h Volume',
-      ]
+        'Last updated'
+      ],
+      textSearch: ''
     }
   },
   async mounted(){
@@ -69,7 +82,16 @@ export default {
     const data = await res.json()
     console.log(data)
     this.coins = data
+    this.filteredCoin = data
+  },
+  methods:{
+    searchCoin(){
+        this.filteredCoin = this.coins.filter(coin =>
+          coin.name.toLowerCase().includes(this.textSearch.toLowerCase()) ||
+          coin.symbol.toLowerCase().includes(this.textSearch.toLowerCase()))
+        },
   }
+  
 }
 </script>
 
